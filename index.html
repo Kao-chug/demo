@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+
+        }
+
+        body {
+            width: 100%;
+
+            display: flex;
+            background-image: url(https://calendarlo.com/wp-content/uploads/2022/07/pink-clouds-desktop-wallpaper.jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+
+        }
+
+        .nav {
+            height: 10%;
+            width: 100%;
+            background-color: #F8F991;
+            padding: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .area {
+            width: 150px;
+            height: 50px;
+            background-color: #43281C;
+            border-radius: 30px;
+            font-size: 30px;
+            color: aliceblue;
+
+        }
+
+
+        #card {
+            /* display: flex;  
+        justify-content: center;
+        align-items: center; */
+            /* flex-direction: row; */
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+
+        }
+
+
+
+        .box {
+            width: 300px;
+            height: 400px;
+            background-color: #247BA0;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 25px;
+            line-height: 40px;
+            margin: 10px;
+
+        }
+
+        .box img {
+            height: 200px;
+            width: 280px;
+            border-radius: 20px;
+            object-fit: contain;
+
+        }
+    </style>
+</head>
+
+
+
+<body>
+    <main>
+        <div class="nav">
+            <button class="area N" onclick="filter(all)">北部</button>
+            <button class="area S" onclick="filter(center)">西部</button>
+            <button class="area E" onclick="filter(east)">東部</button>
+            <button class="area W" onclick="filter(center)">中部</button>
+            <button class="area ANT" onclick="filter(east)">外島</button>
+        </div>
+
+
+
+
+        <div class="container">
+            <div id="weather">
+                <div id="card"></div>
+            </div>
+        </div>
+
+    </main>
+
+
+    <script>
+        const card = document.getElementById('card')
+        console.log(card)
+        const btn = document.getElementsByClassName('.nav')
+
+        const north = ['臺北市', '新北市', '基隆市', '新竹市', '桃園市', '新竹縣', '宜蘭縣']
+        const center = ['苗栗縣', '臺中市', '彰化縣', '南投縣', '雲林縣']
+        const south = ['嘉義市', '嘉義縣', '臺南市', '高雄市', '屏東縣', '澎湖縣']
+        const east = ['花蓮縣', '臺東縣']
+        const island = ['金門縣', '連江縣']
+
+        fetch('https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-AA300EC1-31BA-465E-B669-6CA2C320A195')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (weather) {
+                console.log(weather)
+                console.log(weather.records.location)
+                var re = weather.records.location
+
+                re.forEach(element => {
+                    let area = element.locationName
+                    let minTemp = element.weatherElement[2].time[0].parameter.parameterName
+                    let maxTemp = element.weatherElement[4].time[0].parameter.parameterName
+                    let rain = element.weatherElement[1].time[0].parameter.parameterName
+                    let feel = element.weatherElement[3].time[0].parameter.parameterName
+                    let img_path
+
+                    if (rain < 25) {
+                        img_path = './d14fd0ff1472246176c8684a1fd0fcee.webp'
+                    }
+                    else if (rain < 50) {
+                        img_path = './冷.gif'
+                    }
+                    else {
+                        img_path = './giphy.webp'
+                    }
+
+                    card.innerHTML = card.innerHTML + `
+                    <div class="box">
+                    <img src=${img_path} alt="rain">
+                    <p>  ${area} </p>
+                    <p>溫度: ${minTemp}C ~ ${maxTemp}C</p>
+                    <p>降雨機率: ${rain} %</p>
+                    <p>舒適度: ${feel}</p>
+
+                    </div>
+                `
+                });
+
+
+
+                // 第一個方法：把所有的縣市印出來，然後把不想看到的display:none =>
+
+                function filter1(areas) {
+                    var allcity = document.querySelectorAll('.wx_card img')
+
+                    // 將所有程式一筆一筆叫出來
+                    allcity.forEach(city => {
+                        // 如果條件是all全部，就直接給b1ock
+                        if (areas == 'all') {
+                            city.style.display = 'block'
+                        } else {
+                            // 先假設所有程式都不顯示
+                            city.style.display = 'none'
+                            area.forEach(area => {
+                                // 將條件拿出來比較，如果條件中的任何一個縣市有符合就加上block/flex顯示出來
+                                if (city.dataset.city == area) {
+                                    city.style.display = 'block'
+                                }
+                            })
+                        }
+                    });
+
+                }
+            });
+        // 第二個方法：根據按下的按鈕選定條件，只將符合條件的縣市做出卡片
+
+        function filter2(areas) {
+            container.innerHTML = ''
+            location.forEach(citydate => {
+                areas.forEach(traget => {
+                    if (citydate.locationName == traget) {
+                        let area = citydate.locationName
+                        let minTemp = element.weatherElement[2].time[0].parameter.parameterName
+                        let maxTemp = element.weatherElement[4].time[0].parameter.parameterName
+                        let rain = element.weatherElement[1].time[0].parameter.parameterName
+                        let feel = element.weatherElement[3].time[0].parameter.parameterName
+                        let img_path
+
+                        if (rain < 25) {
+                            img_path = './d14fd0ff1472246176c8684a1fd0fcee.webp'
+                        }
+                        else if (rain < 50) {
+                            img_path = './冷.gif'
+                        }
+                        else {
+                            img_path = './giphy.webp'
+                        }
+
+                        card.innerHTML = card.innerHTML + `
+                    <div class="box">
+                    <img src=${img_path} alt="rain">
+                    <p>  ${area} </p>
+                    <p>溫度: ${minTemp}C ~ ${maxTemp}C</p>
+                    <p>降雨機率: ${rain} %</p>
+                    <p>舒適度: ${feel}</p>
+
+                    </div>
+                `
+
+                    }
+
+
+
+                })
+            })
+
+
+        }
+
+
+
+    </script>
+
+</body>
+
+</html>
