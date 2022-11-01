@@ -121,10 +121,9 @@
                 return response.json();
             })
             .then(function (weather) {
-                console.log(weather)
-                console.log(weather.records.location)
-                var re = weather.records.location
-
+                console.log(weather);
+                console.log(weather.records.location);
+                var re = weather.records.location;
                 re.forEach(element => {
                     let area = element.locationName
                     let minTemp = element.weatherElement[2].time[0].parameter.parameterName
